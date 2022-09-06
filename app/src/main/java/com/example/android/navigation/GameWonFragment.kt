@@ -16,10 +16,9 @@
 
 package com.example.android.navigation
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -36,6 +35,30 @@ class GameWonFragment : Fragment() {
         binding.nextMatchButton.setOnClickListener { view -> view.findNavController().popBackStack() }
         var args = GameWonFragmentArgs.fromBundle(arguments!!)
         Toast.makeText(context, args.toString(), Toast.LENGTH_SHORT).show()
+        setHasOptionsMenu(true)
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.winner_menu, menu)
+
+    }
+    private fun getShareIntent():Intent{
+        var args=GameWonFragmentArgs.fromBundle(requireArguments())
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.setType("text/plain")
+            .putExtra(Intent.EXTRA_TEXT, getString(R.string.share_success_text, args.numCorrect, args.numQuestions))
+        return shareIntent
+    }
+    // Starting an Activity with our new Intent
+    private fun shareSuccess() {
+        startActivity(getShareIntent())
+    }
+    // Sharing from the Menu
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.share -> shareSuccess()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
